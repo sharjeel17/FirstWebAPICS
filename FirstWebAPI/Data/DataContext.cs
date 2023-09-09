@@ -5,11 +5,16 @@ namespace FirstWebAPI.Data
 {
     public class DataContext : DbContext
     {
+        //code that sits on top of database
+        //to make it easier to access the database
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
             
         }
 
+        //each property here defines a model/table in the database
+        //and these properties can be further used in code to access/modify
+        //all of the tables and their columns
         public DbSet<Category> Categories { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Owner> Owners { get; set; }
@@ -19,6 +24,7 @@ namespace FirstWebAPI.Data
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Reviewer> Reviewers { get; set; }
 
+        //not necessary now but mapping Many-to-Many relationships here
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PokemonCategory>()
