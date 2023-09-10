@@ -4,6 +4,8 @@ This is a pokemon review api and is only an API based off of a tutorial
 Some of the concepts I have learnt during this project include but not limited to:     
 •	Repository Pattern  
 •	Dependency Injection  
-•	Object relational mapping (ORM)   
+•	Dependency Injection types in ASP.NET (AddSingleton, AddScoped and Addtransient)       
+•	Object relational mapping (ORM)     
+•	Entity Framework     
 •	Data Transfer Objects     
-•	Auto-mapper      
+•	Auto-mapper     
