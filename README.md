@@ -5,7 +5,7 @@ Some of the concepts I have learnt during this project include but not limited t
 •	Repository Pattern  
 •	Dependency Injection  
 •	Dependency Injection types in ASP.NET (AddSingleton, AddScoped and Addtransient)       
-•	Object relational mapping (ORM)
+•	Object relational mapping (ORM)     
 •	Entity Framework     
 •	Data Transfer Objects     
 •	Auto-mapper     
