@@ -15,9 +15,21 @@ namespace FirstWebAPI.Repository
             
         }
         //returns whether Category exists or not
-        public bool CategoryExists(int id)
+        public bool CategoryExists(int? id)
         {
             return _context.Categories.Any(c => c.Id == id);
+        }
+
+        public bool CategoryExists(string name)
+        {
+            return _context.Categories.Any(c => c.Name.Trim().ToUpper() == name.Trim().ToUpper());
+        }
+
+
+        public bool CreateCategory(Category category)
+        {
+            _context.Categories.Add(category);
+            return Save();
         }
 
         //return collection of all categories
@@ -37,6 +49,11 @@ namespace FirstWebAPI.Repository
         public ICollection<Pokemon> GetPokemonByCategory(int categoryId)
         {
             return _context.PokemonCategories.Where(pc => pc.CategoryId == categoryId).Select(pc => pc.Pokemon).ToList();
+        }
+
+        public bool Save()
+        {
+            return _context.SaveChanges() > 0;
         }
     }
 }
