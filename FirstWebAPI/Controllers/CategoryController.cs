@@ -63,18 +63,22 @@ namespace FirstWebAPI.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
         //FromBody attribute ensures that the category key:value pairs
         //only come from the body and nowhere else
         public IActionResult CreateCategory([FromBody] CategoryDto inputCategory) 
         {
             //not needed/redundant as ModelState itself will do the validation check
-            //before ever executing code in this method
-            //statement written for safety and housekeeping
+            //before ever executing code in this method.
+            //Statement written for safety and housekeeping
             if (inputCategory == null) return BadRequest(ModelState);
+            Console.WriteLine(inputCategory.Id);
 
             //EF will check and see if there are matching ID/Primary keys
             //at the createCategory and throw error if there is
             //but better to do self checking and returning early to reduce errors
+            //IMPORANT: If InputCategory.Id is null/not present in request body
+            //then Id will default to the value 0
             if (_categoryRepository.CategoryExists(inputCategory.Id))
                 ModelState.AddModelError("ID Error", "ID Key already exists");
 
@@ -87,10 +91,10 @@ namespace FirstWebAPI.Controllers
             //if any above conditions are met then ModelState will be invalid
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            //Identity_Insert is off, so Id needs to be null
+            //Identity_Insert is off, so Id needs to be 0
             //as we cannot set Id value ourselves.
             //If Identity_Insert is on, comment this line out
-            inputCategory.Id = null;
+            inputCategory.Id = 0;
 
             //map CategoryDto to Category
             var categoryMap = _mapper.Map<Category>(inputCategory);

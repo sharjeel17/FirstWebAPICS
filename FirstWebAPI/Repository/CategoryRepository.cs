@@ -15,7 +15,7 @@ namespace FirstWebAPI.Repository
             
         }
         //returns whether Category exists or not
-        public bool CategoryExists(int? id)
+        public bool CategoryExists(int id)
         {
             return _context.Categories.Any(c => c.Id == id);
         }

@@ -12,6 +12,12 @@ namespace FirstWebAPI.Repository
             _context = context;
         }
 
+        public bool CreateOwner(Owner owner)
+        {
+            _context.Owners.Add(owner);
+            return Save();
+        }
+
         public Owner GetOwner(int ownerId)
         {
             return _context.Owners.Where(o => o.Id == ownerId).FirstOrDefault();
@@ -35,6 +41,19 @@ namespace FirstWebAPI.Repository
         public bool OwnerExists(int ownerId)
         {
             return _context.Owners.Any(o => o.Id == ownerId);
+        }
+
+        //check if both first name and last name match a name inside database
+        public bool OwnerExists(string firstName, string lastName)
+        {
+            return _context.Owners.Any(o => (o.FirstName.Trim().ToUpper() == firstName.Trim().ToUpper())
+            && (o.LastName.Trim().ToUpper() == lastName.Trim().ToUpper()));
+        }
+
+        public bool Save()
+        {
+            var save = _context.SaveChanges();
+            return save > 0;
         }
     }
 }

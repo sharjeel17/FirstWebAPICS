@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FirstWebAPI.Dto;
 using FirstWebAPI.Interfaces;
+using FirstWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstWebAPI.Controllers
@@ -10,10 +11,13 @@ namespace FirstWebAPI.Controllers
     public class OwnerController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly ICountryRepository _countryRepository;
         private readonly IMapper _mapper;
-        public OwnerController(IOwnerRepository ownerRepository, IMapper mapper)
+        public OwnerController(IOwnerRepository ownerRepository, ICountryRepository countryRepository,
+            IMapper mapper)
         {
             _ownerRepository = ownerRepository;
+            _countryRepository = countryRepository;
             _mapper = mapper;
         }
 
@@ -57,6 +61,39 @@ namespace FirstWebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             return Ok(pokemons);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult CreateOwner([FromBody] OwnerDto owner, [FromQuery] int countryId) 
+        {
+            if (owner == null) return BadRequest(ModelState);
+
+            if (_ownerRepository.OwnerExists(owner.Id))
+                ModelState.AddModelError("ID Error", "Owner ID already exists");
+
+            if (_ownerRepository.OwnerExists(owner.FirstName, owner.LastName))
+                ModelState.AddModelError("Name Error", "Owner name already exists");
+
+            if (!_countryRepository.CountryExists(countryId))
+                ModelState.AddModelError("Country ID Error", "Please enter a valid country ID in query");
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            owner.Id = 0;
+            Owner mappedOwner = _mapper.Map<Owner>(owner);
+
+            mappedOwner.Country = _countryRepository.GetCountry(countryId);
+            if(!_ownerRepository.CreateOwner(mappedOwner))
+            {
+                ModelState.AddModelError("Create Error", "Something went wrong while creating");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Successful");
         }
     }
 }

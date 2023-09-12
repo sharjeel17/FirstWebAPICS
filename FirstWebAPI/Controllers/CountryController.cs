@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FirstWebAPI.Dto;
 using FirstWebAPI.Interfaces;
+using FirstWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstWebAPI.Controllers
@@ -22,7 +23,7 @@ namespace FirstWebAPI.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<CountryDto>))]
         [ProducesResponseType(400)]
-        public IActionResult GetCountries() 
+        public IActionResult GetCountries()
         {
             var countries = _mapper.Map<ICollection<CountryDto>>(_countryRepository.GetCountries());
 
@@ -35,7 +36,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(200, Type = typeof(CountryDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetCountry(int countryId) 
+        public IActionResult GetCountry(int countryId)
         {
             if (!(_countryRepository.CountryExists(countryId))) return NotFound();
 
@@ -59,5 +60,36 @@ namespace FirstWebAPI.Controllers
             return Ok(country);
         }
 
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult CreateCountry([FromBody] CountryDto country) 
+        {
+            //check comments on CategorController to see what each is doing
+            if (country == null) return BadRequest(ModelState);
+
+            if (_countryRepository.CountryExists(country.Id))
+                ModelState.AddModelError("ID Error", "Country with that ID already exists");
+
+            if (_countryRepository.CountryExists(country.Name))
+                ModelState.AddModelError("Name Error", "Country with that name already exists");
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            country.Id = 0;
+
+            Country mappedCountry = _mapper.Map<Country>(country);
+
+            if (!_countryRepository.CreateCountry(mappedCountry)) 
+            {
+                ModelState.AddModelError("Create Error", "Something went wrong while creating");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Created");
+
+        }
     }
 }

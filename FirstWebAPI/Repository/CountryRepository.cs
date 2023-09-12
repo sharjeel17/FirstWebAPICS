@@ -18,6 +18,17 @@ namespace FirstWebAPI.Repository
             return _context.Countries.Any(c => c.Id == id);
         }
 
+        public bool CountryExists(string name)
+        {
+            return _context.Countries.Any(c => c.Name.Trim().ToUpper() == name.Trim().ToUpper());
+        }
+
+        public bool CreateCountry(Country country)
+        {
+            _context.Countries.Add(country);
+            return Save();
+        }
+
         public ICollection<Country> GetCountries()
         {
             return _context.Countries.ToList();
@@ -38,6 +49,12 @@ namespace FirstWebAPI.Repository
             //return _context.Countries.Where(c => c.Id == countryId).Select(c => c.Owners).FirstOrDefault();
             //OR
             return _context.Owners.Where(o => o.Country.Id == countryId).ToList();
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0;
         }
     }
 }
