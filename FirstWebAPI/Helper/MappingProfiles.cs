@@ -17,7 +17,9 @@ namespace FirstWebAPI.Helper
             CreateMap<Owner, OwnerDto>();
             CreateMap<OwnerDto, Owner>();
             CreateMap<Review, ReviewDto>();
+            CreateMap<CreateReviewDto, Review>();
             CreateMap<Reviewer, ReviewerDto>();
+            CreateMap<CreateReviewerDto, Reviewer>();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FirstWebAPI.Dto;
 using FirstWebAPI.Interfaces;
+using FirstWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstWebAPI.Controllers
@@ -45,7 +46,7 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpGet("{reviewerId}/reviews")]
-        [ProducesResponseType(200, Type = typeof(ReviewDto))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<ReviewDto>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public IActionResult GetReviewsByReviewer(int reviewerId) 
@@ -57,6 +58,33 @@ namespace FirstWebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             return Ok(reviews);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(500)]
+        public IActionResult CreateReviewer(CreateReviewerDto inputReviewer) 
+        {
+            if (inputReviewer == null)
+                return BadRequest(ModelState);
+
+            if (_reviewerRepository.ReviewerExists(inputReviewer.FirstName, inputReviewer.LastName))
+                ModelState.AddModelError("Reviewer Exists", "Entered reviewer already exists");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedReviewer = _mapper.Map<Reviewer>(inputReviewer);
+            mappedReviewer.Id = 0;
+
+            if (!_reviewerRepository.CreateReviewer(mappedReviewer)) 
+            {
+                ModelState.AddModelError("Creation Error", "Something went wrong while creating");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok(mappedReviewer);
         }
     }
 }
