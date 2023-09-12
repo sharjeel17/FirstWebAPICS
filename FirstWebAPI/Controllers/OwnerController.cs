@@ -86,7 +86,11 @@ namespace FirstWebAPI.Controllers
             owner.Id = 0;
             Owner mappedOwner = _mapper.Map<Owner>(owner);
 
+            //Add country, with countryId from query string, to the Owner
+            //as it is a Country to Owner - One to Many relationship
+            //and each Owner needs a Country as the Country is a Foreign Key inside of Owner
             mappedOwner.Country = _countryRepository.GetCountry(countryId);
+
             if(!_ownerRepository.CreateOwner(mappedOwner))
             {
                 ModelState.AddModelError("Create Error", "Something went wrong while creating");

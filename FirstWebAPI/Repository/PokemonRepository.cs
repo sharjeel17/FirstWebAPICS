@@ -11,8 +11,34 @@ namespace FirstWebAPI.Repository
         {
             _context = context;
         }
-        ///////////////
-        ///////////////
+
+        public bool CreatePokemon(int categoryId, int ownerId, Pokemon pokemon)
+        {
+            Console.WriteLine(pokemon.Id);
+            _context.Pokemon.Add(pokemon);
+            if (!Save()) return false;
+            Console.WriteLine(pokemon.Id);
+
+            var owner = _context.Owners.Where(o => o.Id == ownerId).FirstOrDefault();
+            var category = _context.Categories.Where(c => c.Id == categoryId).FirstOrDefault();
+
+            var pokeOwner = new PokemonOwner
+            {
+                Pokemon = pokemon,
+                Owner = owner
+            };
+            _context.PokemonOwners.Add(pokeOwner);
+
+            var pokeCategory = new PokemonCategory
+            {
+                Pokemon = pokemon,
+                Category = category
+            };
+
+            _context.PokemonCategories.Add(pokeCategory);
+            return Save();
+
+        }
 
         public Pokemon GetPokemon(int id)
         {
@@ -41,6 +67,17 @@ namespace FirstWebAPI.Repository
         public bool PokemonExists(int pokeId)
         {
             return _context.Pokemon.Any(p => p.Id == pokeId);
+        }
+
+        public bool PokemonExists(string name)
+        {
+            return _context.Pokemon.Any(p => p.Name.Trim().ToUpper() == name.Trim().ToUpper());
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0;
         }
     }
 }

@@ -81,7 +81,7 @@ namespace FirstWebAPI.Controllers
             country.Id = 0;
 
             Country mappedCountry = _mapper.Map<Country>(country);
-
+            Console.WriteLine(mappedCountry.Id);
             if (!_countryRepository.CreateCountry(mappedCountry)) 
             {
                 ModelState.AddModelError("Create Error", "Something went wrong while creating");

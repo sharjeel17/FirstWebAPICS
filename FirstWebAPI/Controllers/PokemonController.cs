@@ -11,11 +11,16 @@ namespace FirstWebAPI.Controllers
     public class PokemonController : Controller
     {
         private readonly IPokemonRepository _pokemonRepository;
+        private readonly IOwnerRepository _ownerRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper)
+        public PokemonController(IPokemonRepository pokemonRepository, ICategoryRepository categoryRepository,
+            IOwnerRepository ownerRepository ,IMapper mapper)
         {
             _pokemonRepository = pokemonRepository;
+            _categoryRepository = categoryRepository;
+            _ownerRepository = ownerRepository;
             _mapper = mapper;
         }
 
@@ -60,6 +65,47 @@ namespace FirstWebAPI.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             return Ok(rating);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        public IActionResult CreatePokemon([FromBody] CreatePokemonDto inputPokemon) 
+        {
+            if (inputPokemon == null) 
+                return BadRequest(ModelState);
+
+            if(_pokemonRepository.PokemonExists(inputPokemon.Name))
+                ModelState.AddModelError("Pokemon Exists", "Entered name of Pokemon already exists");
+
+            if (!_categoryRepository.CategoryExists(inputPokemon.categoryId))
+                ModelState.AddModelError("Bad CategoryId", "Please enter a valid category ID");
+
+            if (!_ownerRepository.OwnerExists(inputPokemon.ownerId))
+                ModelState.AddModelError("Bad OwnerId", "Please enter a valid Owner ID");
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            //Unlike other controllers (Category, Country and Owner)
+            //I'm simplifying this one to just default the Id value to 0
+            //so EF can give the Pokemon Id a number itself
+            //if Id is missing from the Body, then Id would be 0 anyway
+            //but doing this line will ensure that Id is always 0
+            //whether or not the user passed the Id as 0, missing Id or more than 0
+            inputPokemon.Id = 0;
+
+            var pokemon = _mapper.Map<Pokemon>(inputPokemon);
+
+            if (!_pokemonRepository.CreatePokemon(inputPokemon.categoryId, 
+                inputPokemon.ownerId, pokemon))
+            {
+                ModelState.AddModelError("Create Error", "Something went wrong while creating");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok();
+
         }
     }
 }
