@@ -14,5 +14,8 @@ namespace FirstWebAPI.Interfaces
         /* POST/CREATE */
         public bool CreateCategory(Category category);
         public bool Save();
+
+        //UPDATE PUT
+        public bool UpdateCategory(Category category);
     }
 }

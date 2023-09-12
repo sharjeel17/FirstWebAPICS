@@ -61,10 +61,10 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public IActionResult CreateReviewer(CreateReviewerDto inputReviewer) 
+        public IActionResult CreateReviewer([FromBody] CreateReviewerDto inputReviewer) 
         {
             if (inputReviewer == null)
                 return BadRequest(ModelState);
@@ -84,7 +84,7 @@ namespace FirstWebAPI.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok(mappedReviewer);
+            return StatusCode(201,mappedReviewer);
         }
     }
 }

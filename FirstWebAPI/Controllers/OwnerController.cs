@@ -64,7 +64,7 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public IActionResult CreateOwner([FromBody] OwnerDto owner, [FromQuery] int countryId) 
@@ -97,7 +97,7 @@ namespace FirstWebAPI.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Successful");
+            return StatusCode(201, mappedOwner);
         }
     }
 }

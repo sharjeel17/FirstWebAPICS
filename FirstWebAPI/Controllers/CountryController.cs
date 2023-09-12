@@ -61,7 +61,7 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public IActionResult CreateCountry([FromBody] CountryDto country) 
@@ -81,14 +81,13 @@ namespace FirstWebAPI.Controllers
             country.Id = 0;
 
             Country mappedCountry = _mapper.Map<Country>(country);
-            Console.WriteLine(mappedCountry.Id);
             if (!_countryRepository.CreateCountry(mappedCountry)) 
             {
                 ModelState.AddModelError("Create Error", "Something went wrong while creating");
                 return StatusCode(500, ModelState);
             }
 
-            return Ok("Created");
+            return StatusCode(201, mappedCountry);
 
         }
     }

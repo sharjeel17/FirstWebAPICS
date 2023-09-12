@@ -61,7 +61,7 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         //FromBody attribute ensures that the category key:value pairs
@@ -106,7 +106,39 @@ namespace FirstWebAPI.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok();
+            return StatusCode(201, categoryMap);
+        }
+
+        [HttpPut("{categoryId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory([FromRoute] int categoryId, [FromBody] CategoryDto inputCategory) 
+        {
+            if (inputCategory == null)
+                return BadRequest(ModelState);
+
+            if (inputCategory.Id != categoryId)
+            {
+                ModelState.AddModelError("Incorrect IDS", "The given IDs do not match from the route and body");
+                return BadRequest(ModelState);
+            }
+
+            if (!_categoryRepository.CategoryExists(categoryId))
+                return NotFound();
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedCategory = _mapper.Map<Category>(inputCategory);
+
+            if(!_categoryRepository.UpdateCategory(mappedCategory))
+            {
+                ModelState.AddModelError("Update Error", "Something went wrong while updating category");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

@@ -55,5 +55,11 @@ namespace FirstWebAPI.Repository
         {
             return _context.SaveChanges() > 0;
         }
+
+        public bool UpdateCategory(Category category)
+        {
+            _context.Categories.Update(category);
+            return Save();
+        }
     }
 }

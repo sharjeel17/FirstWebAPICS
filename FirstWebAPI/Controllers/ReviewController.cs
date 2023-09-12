@@ -66,7 +66,7 @@ namespace FirstWebAPI.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
         public IActionResult CreateReview(CreateReviewDto inputReview) 
@@ -97,7 +97,7 @@ namespace FirstWebAPI.Controllers
                 return StatusCode(500, ModelState);
             }
 
-            return Ok();
+            return StatusCode(201, mappedReview);
         }
     }
 }
