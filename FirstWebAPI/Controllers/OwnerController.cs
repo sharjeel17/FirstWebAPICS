@@ -99,5 +99,37 @@ namespace FirstWebAPI.Controllers
 
             return StatusCode(201, mappedOwner);
         }
+
+        [HttpPut("{ownerId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory([FromRoute] int ownerId, [FromBody] OwnerDto inputOwner)
+        {
+            if (inputOwner == null)
+                return BadRequest(ModelState);
+
+            if (inputOwner.Id != ownerId)
+            {
+                ModelState.AddModelError("Incorrect IDS", "The given IDs do not match from the route and body");
+                return BadRequest(ModelState);
+            }
+
+            if (!_ownerRepository.OwnerExists(ownerId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedOwner = _mapper.Map<Owner>(inputOwner);
+
+            if (!_ownerRepository.UpdateOwner(mappedOwner))
+            {
+                ModelState.AddModelError("Update Error", "Something went wrong while updating owner");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
     }
 }

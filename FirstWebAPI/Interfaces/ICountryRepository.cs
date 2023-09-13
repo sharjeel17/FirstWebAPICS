@@ -15,6 +15,9 @@ namespace FirstWebAPI.Interfaces
 
         //POST CREATE
         bool CreateCountry(Country country);
+
+        //PUT UPDATE
+        bool UpdateCountry(Country country);
         bool Save();
     }
 }

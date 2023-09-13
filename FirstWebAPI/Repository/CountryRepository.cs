@@ -56,5 +56,11 @@ namespace FirstWebAPI.Repository
             var saved = _context.SaveChanges();
             return saved > 0;
         }
+
+        public bool UpdateCountry(Country country)
+        {
+            _context.Countries.Update(country);
+            return Save();
+        }
     }
 }

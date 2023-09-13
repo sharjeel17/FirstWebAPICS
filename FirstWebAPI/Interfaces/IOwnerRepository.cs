@@ -15,6 +15,9 @@ namespace FirstWebAPI.Interfaces
 
         //CREATE POST
         bool CreateOwner(Owner owner);
+
+        //UPDATE PUT
+        bool UpdateOwner(Owner owner);
         bool Save();
         
     }

@@ -2,6 +2,7 @@
 using FirstWebAPI.Dto;
 using FirstWebAPI.Interfaces;
 using FirstWebAPI.Models;
+using FirstWebAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstWebAPI.Controllers
@@ -89,6 +90,38 @@ namespace FirstWebAPI.Controllers
 
             return StatusCode(201, mappedCountry);
 
+        }
+
+        [HttpPut("{countryId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory([FromRoute] int countryId, [FromBody] CountryDto inputCountry)
+        {
+            if (inputCountry == null)
+                return BadRequest(ModelState);
+
+            if (inputCountry.Id != countryId)
+            {
+                ModelState.AddModelError("Incorrect IDS", "The given IDs do not match from the route and body");
+                return BadRequest(ModelState);
+            }
+
+            if (!_countryRepository.CountryExists(countryId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedCountry = _mapper.Map<Country>(inputCountry);
+
+            if (!_countryRepository.UpdateCountry(mappedCountry))
+            {
+                ModelState.AddModelError("Update Error", "Something went wrong while updating country");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

@@ -55,5 +55,11 @@ namespace FirstWebAPI.Repository
             var save = _context.SaveChanges();
             return save > 0;
         }
+
+        public bool UpdateOwner(Owner owner)
+        {
+            _context.Owners.Update(owner);
+            return Save();
+        }
     }
 }
