@@ -19,6 +19,15 @@ namespace FirstWebAPI.Repository
             return Save();
         }
 
+        //Also deletes all entries in Reviews that reference reviewerId
+        //(cascading behaviour)
+        public bool DeleteReviewer(int reviewerId)
+        {
+            var reviewer = _context.Reviewers.FirstOrDefault(re => re.Id == reviewerId);
+            _context.Reviewers.Remove(reviewer);
+            return Save();
+        }
+
         public Reviewer GetReviewer(int reviewerId)
         {
             return _context.Reviewers.Where(r => r.Id == reviewerId).Include(r => r.Reviews).FirstOrDefault();
@@ -49,6 +58,12 @@ namespace FirstWebAPI.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0;
+        }
+
+        public bool UpdateReviewer(Reviewer reviewer)
+        {
+            _context.Reviewers.Update(reviewer);
+            return Save();
         }
     }
 }

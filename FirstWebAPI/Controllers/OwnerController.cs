@@ -131,5 +131,27 @@ namespace FirstWebAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{ownerId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeleteOwner([FromRoute] int ownerId)
+        {
+            if (!_ownerRepository.OwnerExists(ownerId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_ownerRepository.DeleteOwner(ownerId))
+            {
+                ModelState.AddModelError("Delete Error", "Something went wrong while deleting owner");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok($"Deleted owner {ownerId} successfully");
+        }
     }
 }

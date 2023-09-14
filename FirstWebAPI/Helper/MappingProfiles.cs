@@ -8,7 +8,9 @@ namespace FirstWebAPI.Helper
     {
         public MappingProfiles()
         {
+            //could use ReverseMap() for reverse relationships
             CreateMap<Pokemon, PokemonDto>();
+            CreateMap<PokemonDto, Pokemon>();
             CreateMap<CreatePokemonDto, Pokemon>();
             CreateMap<Category, CategoryDto>();
             CreateMap<CategoryDto, Category>();
@@ -17,6 +19,7 @@ namespace FirstWebAPI.Helper
             CreateMap<Owner, OwnerDto>();
             CreateMap<OwnerDto, Owner>();
             CreateMap<Review, ReviewDto>();
+            CreateMap<ReviewDto, Review>();
             CreateMap<CreateReviewDto, Review>();
             CreateMap<Reviewer, ReviewerDto>();
             CreateMap<CreateReviewerDto, Reviewer>();

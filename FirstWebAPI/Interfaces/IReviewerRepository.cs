@@ -13,6 +13,11 @@ namespace FirstWebAPI.Interfaces
 
         //POST CREATE
         bool CreateReviewer(Reviewer reviewer);
+        //PUT UPDATE
+        bool UpdateReviewer(Reviewer reviewer);
+
+        //DELETE
+        bool DeleteReviewer(int reviewerId);
         bool Save();
     }
 }

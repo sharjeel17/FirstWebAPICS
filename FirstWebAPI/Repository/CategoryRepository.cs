@@ -32,6 +32,18 @@ namespace FirstWebAPI.Repository
             return Save();
         }
 
+        //IMPORTANT
+        //When a Category (which is a Foreign Key in the PokemonCategories Join-Table) is deleted
+        //all of the enteries with categoryId inside of the Join-Table are also deleted
+        //(Called Cascading)
+        //Cascading is enabled by default
+        public bool DeleteCategory(int id)
+        {
+            var category = _context.Categories.Where(c => c.Id == id).FirstOrDefault();
+            _context.Categories.Remove(category);
+            return Save();
+        }
+
         //return collection of all categories
         public ICollection<Category> GetCategories()
         {

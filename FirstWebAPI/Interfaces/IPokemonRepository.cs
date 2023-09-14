@@ -14,7 +14,15 @@ namespace FirstWebAPI.Interfaces
         public bool PokemonExists(string name);
 
         //POST CREATE
-        public bool CreatePokemon(int categoryId,int ownerId,Pokemon inputPokemon);
+        public bool CreatePokemon(int categoryId,int ownerId, Pokemon inputPokemon);
+
+        //PUT UPDATE
+        public bool UpdatePokemon(Pokemon inputPokemon);
+
+        //DELETE
+        public bool DeletePokemon(int pokemonId);
+
+        //
         public bool Save();
     }
 }

@@ -18,6 +18,15 @@ namespace FirstWebAPI.Repository
             return Save();
         }
 
+        //Also deletes all entries in PokemonOwner that reference ownerId
+        //(cascading)
+        public bool DeleteOwner(int ownerId)
+        {
+            var owner = _context.Owners.FirstOrDefault(o => o.Id == ownerId);
+            _context.Owners.Remove(owner);
+            return Save();
+        }
+
         public Owner GetOwner(int ownerId)
         {
             return _context.Owners.Where(o => o.Id == ownerId).FirstOrDefault();

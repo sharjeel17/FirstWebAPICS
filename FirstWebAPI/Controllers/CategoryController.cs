@@ -140,5 +140,27 @@ namespace FirstWebAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete("{categoryId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeleteCategory([FromRoute] int categoryId) 
+        {
+            if (!_categoryRepository.CategoryExists(categoryId))
+                return NotFound();
+
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_categoryRepository.DeleteCategory(categoryId)) 
+            {
+                ModelState.AddModelError("Delete Error", "Something went wrong while deleting Category");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok($"Deleted category {categoryId} successfully");
+        }
     }
 }

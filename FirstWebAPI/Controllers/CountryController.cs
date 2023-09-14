@@ -96,7 +96,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCategory([FromRoute] int countryId, [FromBody] CountryDto inputCountry)
+        public IActionResult UpdateCountry([FromRoute] int countryId, [FromBody] CountryDto inputCountry)
         {
             if (inputCountry == null)
                 return BadRequest(ModelState);
@@ -122,6 +122,28 @@ namespace FirstWebAPI.Controllers
             }
 
             return NoContent();
+        }
+
+        [HttpDelete("{countryId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeleteCountry([FromRoute] int countryId)
+        {
+            if (!_countryRepository.CountryExists(countryId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_countryRepository.DeleteCountry(countryId))
+            {
+                ModelState.AddModelError("Delete Error", "Something went wrong while deleting country");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok($"Deleted country {countryId} successfully");
         }
     }
 }

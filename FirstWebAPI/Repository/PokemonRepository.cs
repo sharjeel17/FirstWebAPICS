@@ -40,6 +40,15 @@ namespace FirstWebAPI.Repository
 
         }
 
+        //Also deletes all entries in PokemonOwners, PokemonCategories and Reviews
+        //that reference pokemonId
+        public bool DeletePokemon(int pokemonId)
+        {
+            var pokemon = _context.Pokemon.FirstOrDefault(o => o.Id == pokemonId);
+            _context.Pokemon.Remove(pokemon);
+            return Save();
+        }
+
         public Pokemon GetPokemon(int id)
         {
             return _context.Pokemon.Where(p => p.Id == id).FirstOrDefault();
@@ -78,6 +87,12 @@ namespace FirstWebAPI.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0;
+        }
+
+        public bool UpdatePokemon(Pokemon inputPokemon)
+        {
+            _context.Pokemon.Update(inputPokemon);
+            return Save();
         }
     }
 }

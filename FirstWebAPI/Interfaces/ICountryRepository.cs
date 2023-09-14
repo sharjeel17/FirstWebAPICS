@@ -18,6 +18,8 @@ namespace FirstWebAPI.Interfaces
 
         //PUT UPDATE
         bool UpdateCountry(Country country);
+        //DELETE
+        bool DeleteCountry(int id);
         bool Save();
     }
 }

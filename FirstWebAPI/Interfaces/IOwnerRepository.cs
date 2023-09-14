@@ -18,6 +18,9 @@ namespace FirstWebAPI.Interfaces
 
         //UPDATE PUT
         bool UpdateOwner(Owner owner);
+
+        //DELETE
+        bool DeleteOwner(int ownerId);
         bool Save();
         
     }

@@ -11,8 +11,13 @@ namespace FirstWebAPI.Interfaces
         bool ReviewExists(int reviewId);
 
         //POST CREATE
-
         bool CreateReview(Review review);
+
+        //PUT UPDATE
+        bool UpdateReview(Review review); 
+
+        //DELETE
+        bool DeleteReview(int reviewId);
         bool Save();
     }
 }

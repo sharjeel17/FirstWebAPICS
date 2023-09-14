@@ -94,6 +94,7 @@ namespace FirstWebAPI.Controllers
             //if Id is missing from the Body, then Id would be 0 anyway
             //but doing this line will ensure that Id is always 0
             //whether or not the user passed the Id as 0, missing Id or more than 0
+            //EF will assign ID/Primary Key number itself if Id = 0
             inputPokemon.Id = 0;
 
             var pokemon = _mapper.Map<Pokemon>(inputPokemon);
@@ -107,6 +108,60 @@ namespace FirstWebAPI.Controllers
 
             return StatusCode(201, pokemon);
 
+        }
+
+        [HttpPut("{pokeId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategory([FromRoute] int pokeId, [FromBody] PokemonDto inputPokemon)
+        {
+            if (inputPokemon == null)
+                return BadRequest(ModelState);
+
+            if (inputPokemon.Id != pokeId)
+            {
+                ModelState.AddModelError("Incorrect IDS", "The given IDs do not match from the route and body");
+                return BadRequest(ModelState);
+            }
+
+            if (!_pokemonRepository.PokemonExists(pokeId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedPokemon = _mapper.Map<Pokemon>(inputPokemon);
+
+            if (!_pokemonRepository.UpdatePokemon(mappedPokemon))
+            {
+                ModelState.AddModelError("Update Error", "Something went wrong while updating pokemon");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{pokeId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeletePokemon([FromRoute] int pokeId)
+        {
+            if (!_pokemonRepository.PokemonExists(pokeId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_pokemonRepository.DeletePokemon(pokeId))
+            {
+                ModelState.AddModelError("Delete Error", "Something went wrong while deleting pokemon");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok($"Deleted pokemon {pokeId} successfully");
         }
     }
 }

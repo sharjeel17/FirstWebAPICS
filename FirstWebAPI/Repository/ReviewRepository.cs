@@ -18,6 +18,13 @@ namespace FirstWebAPI.Repository
             return Save();
         }
 
+        public bool DeleteReview(int reviewId)
+        {
+            var review = _context.Reviews.FirstOrDefault(r => r.Id == reviewId);
+            _context.Reviews.Remove(review);
+            return Save();
+        }
+
         public Review GetReview(int reviewId)
         {
             return _context.Reviews.Where(r => r.Id == reviewId).FirstOrDefault();
@@ -42,6 +49,12 @@ namespace FirstWebAPI.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0;
+        }
+
+        public bool UpdateReview(Review review)
+        {
+            _context.Reviews.Update(review);
+            return Save();
         }
     }
 }

@@ -99,5 +99,60 @@ namespace FirstWebAPI.Controllers
 
             return StatusCode(201, mappedReview);
         }
+
+        [HttpPut("{reviewId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult UpdateReview([FromRoute] int reviewId, [FromBody] ReviewDto inputReview)
+        {
+            if(inputReview == null)
+                return BadRequest(ModelState);
+
+            if (reviewId != inputReview.Id) 
+            {
+                ModelState.AddModelError("Incorrect IDS", "The given IDs do not match from the route and body");
+                return BadRequest(ModelState);
+            }
+
+            if (!_reviewRepository.ReviewExists(reviewId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedReview = _mapper.Map<Review>(inputReview);
+
+            if (!_reviewRepository.UpdateReview(mappedReview)) 
+            {
+                ModelState.AddModelError("Update Error", "Something went wrong while updating review");
+                return StatusCode(500, ModelState);
+            }
+
+            return StatusCode(200, mappedReview);
+        }
+
+        [HttpDelete("{reviewId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeleteReview([FromRoute] int reviewId)
+        {
+            if (!_reviewRepository.ReviewExists(reviewId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_reviewRepository.DeleteReview(reviewId))
+            {
+                ModelState.AddModelError("Delete Error", "Something went wrong while deleting review");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok($"Deleted review {reviewId} successfully");
+        }
     }
 }

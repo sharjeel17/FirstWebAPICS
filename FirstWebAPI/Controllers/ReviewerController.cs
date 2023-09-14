@@ -2,6 +2,7 @@
 using FirstWebAPI.Dto;
 using FirstWebAPI.Interfaces;
 using FirstWebAPI.Models;
+using FirstWebAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FirstWebAPI.Controllers
@@ -85,6 +86,61 @@ namespace FirstWebAPI.Controllers
             }
 
             return StatusCode(201,mappedReviewer);
+        }
+
+        [HttpPut("{reviewerId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult UpdateReview([FromRoute] int reviewerId, [FromBody] CreateReviewerDto inputReviewer)
+        {
+            if (inputReviewer == null)
+                return BadRequest(ModelState);
+
+            if (reviewerId != inputReviewer.Id)
+            {
+                ModelState.AddModelError("Incorrect IDS", "The given IDs do not match from the route and body");
+                return BadRequest(ModelState);
+            }
+
+            if (!_reviewerRepository.ReviewerExists(reviewerId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var mappedReviewer = _mapper.Map<Reviewer>(inputReviewer);
+
+            if (!_reviewerRepository.UpdateReviewer(mappedReviewer))
+            {
+                ModelState.AddModelError("Update Error", "Something went wrong while updating reviewer");
+                return StatusCode(500, ModelState);
+            }
+
+            return StatusCode(200, mappedReviewer);
+        }
+
+        [HttpDelete("{reviewerId}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(500)]
+        public IActionResult DeleteReviewer([FromRoute] int reviewerId)
+        {
+            if (!_reviewerRepository.ReviewerExists(reviewerId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!_reviewerRepository.DeleteReviewer(reviewerId))
+            {
+                ModelState.AddModelError("Delete Error", "Something went wrong while deleting reviewer");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok($"Deleted reviewer {reviewerId} successfully");
         }
     }
 }

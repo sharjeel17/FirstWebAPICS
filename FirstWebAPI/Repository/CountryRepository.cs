@@ -29,6 +29,15 @@ namespace FirstWebAPI.Repository
             return Save();
         }
 
+        //Also deletes all entries in Owners table that reference countryId
+        //(cascading behaviour)
+        public bool DeleteCountry(int id)
+        {
+            var country = _context.Countries.Where(c => c.Id == id).FirstOrDefault();
+            _context.Countries.Remove(country);
+            return Save();
+        }
+
         public ICollection<Country> GetCountries()
         {
             return _context.Countries.ToList();
