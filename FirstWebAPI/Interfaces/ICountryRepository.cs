@@ -6,20 +6,21 @@ namespace FirstWebAPI.Interfaces
     {
         //methods in interface are public by default
         //GET READ 
-        ICollection<Country> GetCountries();
-        Country GetCountry(int id);
-        Country GetCountryByOwner(int ownerId);
-        ICollection<Owner> GetOwnersByCountry(int countryId);
+        Task<ICollection<Country>> GetCountriesAsync();
+        Task<Country> GetCountryAsync(int id);
+        Task<Country> GetCountryByOwnerAsync(int ownerId);
+        Task<ICollection<Owner>> GetOwnersByCountryAsync(int countryId);
         bool CountryExists(int id);
         bool CountryExists(string name);
 
         //POST CREATE
-        bool CreateCountry(Country country);
+        Task<bool> CreateCountryAsync(Country country);
 
         //PUT UPDATE
-        bool UpdateCountry(Country country);
+        Task<bool> UpdateCountryAsync(Country country);
+
         //DELETE
-        bool DeleteCountry(int id);
-        bool Save();
+        Task<bool> DeleteCountryAsync(int id);
+        Task<bool> SaveAsync();
     }
 }

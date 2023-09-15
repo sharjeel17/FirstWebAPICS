@@ -5,21 +5,22 @@ namespace FirstWebAPI.Interfaces
     public interface ICategoryRepository
     {
         /* GET/READ */
-        public ICollection<Category> GetCategories();
-        public Category GetCategory(int id);
-        public ICollection<Pokemon> GetPokemonByCategory(int categoryId);
+        public Task<ICollection<Category>> GetCategoriesAsync();
+        public Task<Category> GetCategoryAsync(int id);
+        public Task<ICollection<Pokemon>> GetPokemonByCategoryAsync(int categoryId);
         public bool CategoryExists(int id);
         public bool CategoryExists(string name);
 
         /* POST/CREATE */
-        public bool CreateCategory(Category category);
+        public Task<bool> CreateCategoryAsync(Category category);
 
         //UPDATE PUT
-        public bool UpdateCategory(Category category);
+        public Task<bool> UpdateCategoryAsync(Category category);
 
         //DELETE 
-        public bool DeleteCategory(int id);
-        public bool Save();
+        public Task<bool> DeleteCategoryAsync(int id);
+
+        public Task<bool> SaveAsync();
 
         
     }

@@ -22,9 +22,9 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<CategoryDto>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetCategories() 
+        public async Task<IActionResult> GetCategories() 
         {
-            var categories = _mapper.Map<ICollection<CategoryDto>>(_categoryRepository.GetCategories());
+            var categories = _mapper.Map<ICollection<CategoryDto>>(await _categoryRepository.GetCategoriesAsync());
 
             if(!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -35,11 +35,11 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(200, Type = typeof(CategoryDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetCategory(int categoryId)
+        public async Task<IActionResult> GetCategory(int categoryId)
         {
             if (!(_categoryRepository.CategoryExists(categoryId))) return NotFound();
 
-            var categories = _mapper.Map<CategoryDto>(_categoryRepository.GetCategory(categoryId));
+            var categories = _mapper.Map<CategoryDto>(await _categoryRepository.GetCategoryAsync(categoryId));
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -50,11 +50,11 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(200, Type = typeof(IEnumerable<PokemonDto>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetPokemonByCategory(int categoryId) 
+        public async Task<IActionResult> GetPokemonByCategory(int categoryId) 
         {
             if (!(_categoryRepository.CategoryExists(categoryId))) return NotFound();
 
-            var pokemon = _mapper.Map<ICollection<PokemonDto>>(_categoryRepository.GetPokemonByCategory(categoryId));
+            var pokemon = _mapper.Map<ICollection<PokemonDto>>(await _categoryRepository.GetPokemonByCategoryAsync(categoryId));
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             return Ok(pokemon);
@@ -66,7 +66,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(500)]
         //FromBody attribute ensures that the category key:value pairs
         //only come from the body and nowhere else
-        public IActionResult CreateCategory([FromBody] CategoryDto inputCategory) 
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto inputCategory) 
         {
             //not needed/redundant as ModelState itself will do the validation check
             //before ever executing code in this method.
@@ -100,7 +100,7 @@ namespace FirstWebAPI.Controllers
             var categoryMap = _mapper.Map<Category>(inputCategory);
 
             //Add mapped Category object to database and check if successful
-            if (!_categoryRepository.CreateCategory(categoryMap)) 
+            if (! (await _categoryRepository.CreateCategoryAsync(categoryMap))) 
             {
                 ModelState.AddModelError("Create Error", "Something went wrong while creating");
                 return StatusCode(500, ModelState);
@@ -113,7 +113,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCategory([FromRoute] int categoryId, [FromBody] CategoryDto inputCategory) 
+        public async Task<IActionResult> UpdateCategory([FromRoute] int categoryId, [FromBody] CategoryDto inputCategory) 
         {
             if (inputCategory == null)
                 return BadRequest(ModelState);
@@ -132,7 +132,7 @@ namespace FirstWebAPI.Controllers
 
             var mappedCategory = _mapper.Map<Category>(inputCategory);
 
-            if(!_categoryRepository.UpdateCategory(mappedCategory))
+            if(!(await _categoryRepository.UpdateCategoryAsync(mappedCategory)))
             {
                 ModelState.AddModelError("Update Error", "Something went wrong while updating category");
                 return StatusCode(500, ModelState);
@@ -146,7 +146,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public IActionResult DeleteCategory([FromRoute] int categoryId) 
+        public async Task<IActionResult> DeleteCategory([FromRoute] int categoryId) 
         {
             if (!_categoryRepository.CategoryExists(categoryId))
                 return NotFound();
@@ -154,7 +154,7 @@ namespace FirstWebAPI.Controllers
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_categoryRepository.DeleteCategory(categoryId)) 
+            if (!await _categoryRepository.DeleteCategoryAsync(categoryId)) 
             {
                 ModelState.AddModelError("Delete Error", "Something went wrong while deleting Category");
                 return StatusCode(500, ModelState);

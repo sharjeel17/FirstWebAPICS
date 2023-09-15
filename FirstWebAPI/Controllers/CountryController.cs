@@ -24,9 +24,9 @@ namespace FirstWebAPI.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<CountryDto>))]
         [ProducesResponseType(400)]
-        public IActionResult GetCountries()
+        public async Task<IActionResult> GetCountries()
         {
-            var countries = _mapper.Map<ICollection<CountryDto>>(_countryRepository.GetCountries());
+            var countries = _mapper.Map<ICollection<CountryDto>>(await _countryRepository.GetCountriesAsync());
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -37,11 +37,11 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(200, Type = typeof(CountryDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetCountry(int countryId)
+        public async Task<IActionResult> GetCountry(int countryId)
         {
             if (!(_countryRepository.CountryExists(countryId))) return NotFound();
 
-            var country = _mapper.Map<CountryDto>(_countryRepository.GetCountry(countryId));
+            var country = _mapper.Map<CountryDto>(await _countryRepository.GetCountryAsync(countryId));
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -52,9 +52,9 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(200, Type = typeof(CountryDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult GetCountryOfOwner(int ownerId)
+        public async Task<IActionResult> GetCountryOfOwner(int ownerId)
         {
-            var country = _mapper.Map<CountryDto>(_countryRepository.GetCountryByOwner(ownerId));
+            var country = _mapper.Map<CountryDto>(await _countryRepository.GetCountryByOwnerAsync(ownerId));
 
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -65,7 +65,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public IActionResult CreateCountry([FromBody] CountryDto country) 
+        public async Task<IActionResult> CreateCountry([FromBody] CountryDto country) 
         {
             //check comments on CategorController to see what each is doing
             if (country == null) return BadRequest(ModelState);
@@ -82,7 +82,7 @@ namespace FirstWebAPI.Controllers
             country.Id = 0;
 
             Country mappedCountry = _mapper.Map<Country>(country);
-            if (!_countryRepository.CreateCountry(mappedCountry)) 
+            if (!await _countryRepository.CreateCountryAsync(mappedCountry)) 
             {
                 ModelState.AddModelError("Create Error", "Something went wrong while creating");
                 return StatusCode(500, ModelState);
@@ -96,7 +96,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateCountry([FromRoute] int countryId, [FromBody] CountryDto inputCountry)
+        public async Task<IActionResult> UpdateCountry([FromRoute] int countryId, [FromBody] CountryDto inputCountry)
         {
             if (inputCountry == null)
                 return BadRequest(ModelState);
@@ -115,7 +115,7 @@ namespace FirstWebAPI.Controllers
 
             var mappedCountry = _mapper.Map<Country>(inputCountry);
 
-            if (!_countryRepository.UpdateCountry(mappedCountry))
+            if (!await _countryRepository.UpdateCountryAsync(mappedCountry))
             {
                 ModelState.AddModelError("Update Error", "Something went wrong while updating country");
                 return StatusCode(500, ModelState);
@@ -129,7 +129,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [ProducesResponseType(500)]
-        public IActionResult DeleteCountry([FromRoute] int countryId)
+        public async Task<IActionResult> DeleteCountry([FromRoute] int countryId)
         {
             if (!_countryRepository.CountryExists(countryId))
                 return NotFound();
@@ -137,7 +137,7 @@ namespace FirstWebAPI.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!_countryRepository.DeleteCountry(countryId))
+            if (!await _countryRepository.DeleteCountryAsync(countryId))
             {
                 ModelState.AddModelError("Delete Error", "Something went wrong while deleting country");
                 return StatusCode(500, ModelState);

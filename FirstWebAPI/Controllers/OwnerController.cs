@@ -67,7 +67,7 @@ namespace FirstWebAPI.Controllers
         [ProducesResponseType(201)]
         [ProducesResponseType(400)]
         [ProducesResponseType(500)]
-        public IActionResult CreateOwner([FromBody] OwnerDto owner, [FromQuery] int countryId) 
+        public async Task<IActionResult> CreateOwner([FromBody] OwnerDto owner, [FromQuery] int countryId) 
         {
             if (owner == null) return BadRequest(ModelState);
 
@@ -89,7 +89,7 @@ namespace FirstWebAPI.Controllers
             //Add country, with countryId from query string, to the Owner
             //as it is a Country to Owner - One to Many relationship
             //and each Owner needs a Country as the Country is a Foreign Key inside of Owner
-            mappedOwner.Country = _countryRepository.GetCountry(countryId);
+            mappedOwner.Country = await _countryRepository.GetCountryAsync(countryId);
 
             if(!_ownerRepository.CreateOwner(mappedOwner))
             {

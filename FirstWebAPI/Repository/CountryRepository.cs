@@ -1,6 +1,7 @@
 ﻿using FirstWebAPI.Data;
 using FirstWebAPI.Interfaces;
 using FirstWebAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace FirstWebAPI.Repository
 {
@@ -23,53 +24,53 @@ namespace FirstWebAPI.Repository
             return _context.Countries.Any(c => c.Name.Trim().ToUpper() == name.Trim().ToUpper());
         }
 
-        public bool CreateCountry(Country country)
+        public async Task<bool> CreateCountryAsync(Country country)
         {
             _context.Countries.Add(country);
-            return Save();
+            return await SaveAsync();
         }
 
         //Also deletes all entries in Owners table that reference countryId
         //(cascading behaviour)
-        public bool DeleteCountry(int id)
+        public async Task<bool> DeleteCountryAsync(int id)
         {
-            var country = _context.Countries.Where(c => c.Id == id).FirstOrDefault();
+            var country = await _context.Countries.Where(c => c.Id == id).FirstOrDefaultAsync();
             _context.Countries.Remove(country);
-            return Save();
+            return await SaveAsync();
         }
 
-        public ICollection<Country> GetCountries()
+        public async Task<ICollection<Country>> GetCountriesAsync()
         {
-            return _context.Countries.ToList();
+            return await _context.Countries.ToListAsync();
         }
 
-        public Country GetCountry(int id)
+        public async Task<Country> GetCountryAsync(int id)
         {
-            return _context.Countries.Where(c => c.Id == id).FirstOrDefault();
+            return await _context.Countries.Where(c => c.Id == id).FirstOrDefaultAsync();
         }
 
-        public Country GetCountryByOwner(int ownerId)
+        public async Task<Country> GetCountryByOwnerAsync(int ownerId)
         {
-            return _context.Owners.Where(o => o.Id == ownerId).Select(o => o.Country).FirstOrDefault();
+            return await _context.Owners.Where(o => o.Id == ownerId).Select(o => o.Country).FirstOrDefaultAsync();
         }
 
-        public ICollection<Owner> GetOwnersByCountry(int countryId)
+        public async Task<ICollection<Owner>> GetOwnersByCountryAsync(int countryId)
         {
             //return _context.Countries.Where(c => c.Id == countryId).Select(c => c.Owners).FirstOrDefault();
             //OR
-            return _context.Owners.Where(o => o.Country.Id == countryId).ToList();
+            return await _context.Owners.Where(o => o.Country.Id == countryId).ToListAsync();
         }
 
-        public bool Save()
+        public async Task<bool> SaveAsync()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0;
         }
 
-        public bool UpdateCountry(Country country)
+        public async Task<bool> UpdateCountryAsync(Country country)
         {
             _context.Countries.Update(country);
-            return Save();
+            return await SaveAsync();
         }
     }
 }
